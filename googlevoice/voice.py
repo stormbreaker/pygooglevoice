@@ -1,6 +1,6 @@
-from conf import config
-from util import *
-import settings
+from .conf import config
+from .util import *
+from . import settings
 import base64
 
 qpat = re.compile(r'\?')
@@ -71,10 +71,11 @@ class Voice(object):
             passwd = getpass()
 
         content = self.__do_page('login').read()
+        contentStr = content.decode('utf-8')
         # holy hackjob
-        galx = re.search(r"type=\"hidden\"\s+name=\"GALX\"\s+value=\"(.+)\"", content).group(1)
-        gxf = re.search(r"type=\"hidden\"\s+name=\"gxf\"\s+value=\"(.+)\"", content).group(1)
-        result = self.__do_page('login_post', {'Email': email, 'Passwd': passwd, 'GALX': galx, 'gxf': gxf})
+        galx = re.search(r"type=\"hidden\"\s+name=\"GALX\"\s+value=\"(.+)\"", contentStr).group(1)
+        gxf = re.search(r"type=\"hidden\"\s+name=\"gxf\"\s+value=\"(.+)\"", contentStr).group(1)
+        result = self.__do_page('login_post'.encode('utf-8'), {'Email': email, 'Passwd': passwd, 'GALX': galx, 'gxf': gxf})
 
         if result.geturl().startswith(getattr(settings, "SMSAUTH")):
             content = self.__smsAuth(smsKey)
@@ -268,7 +269,7 @@ class Voice(object):
             return urlopen(Request(getattr(settings, page) + data, None, headers))
         if data:
             headers.update({'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'})
-        pageuri = getattr(settings, page)
+        pageuri = getattr(self.settings, page)
         if len(terms) > 0:
             m = qpat.match(page)
             if m:

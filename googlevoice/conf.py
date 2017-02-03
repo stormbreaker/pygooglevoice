@@ -1,6 +1,6 @@
-from ConfigParser import ConfigParser, NoOptionError
+from configparser import ConfigParser, NoOptionError
 import os
-import settings
+from . import settings
 
 
 class Config(ConfigParser):
@@ -27,7 +27,7 @@ class Config(ConfigParser):
 
     def get(self, option, section='gvoice'):
         try:
-            return ConfigParser.get(self, section, option).strip() or None
+            return ConfigParser.get(self, section, option, raw=True).strip() or None
         except NoOptionError:
             return
 
